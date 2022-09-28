@@ -1,7 +1,7 @@
 # Домашка 0
 
 ## Схема сервисов
-![scheme](/proto.jpeg)
+![scheme](proto.jpeg)
 
 ## Сервисы
 
