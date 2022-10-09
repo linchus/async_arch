@@ -1,4 +1,4 @@
 /auth/storage
-/*/log/
+# /*/log/
 /*/tmp/
 /*/node_modules
