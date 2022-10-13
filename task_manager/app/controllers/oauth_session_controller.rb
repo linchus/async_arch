@@ -1,5 +1,8 @@
 class OauthSessionController < ApplicationController
   def destroy
+    request.env['warden'].set_user(nil)
+
+    redirect_to '/'
   end
 
   def create
@@ -7,7 +10,7 @@ class OauthSessionController < ApplicationController
     account = fetch_account || create_account
 
     request.env['warden'].set_user(account)
-    redirect_to '/'
+    redirect_to '/tasks'
   end
 
   private
@@ -21,7 +24,7 @@ class OauthSessionController < ApplicationController
 
   def create_account
     Account.transaction do
-      account = Account.create!(
+      account = Account.find_by(public_id: payload['info']['public_id']) || Account.create!(
         public_id: payload['info']['public_id'],
         full_name: payload['info']['full_name'],
         email: payload['info']['email'],

@@ -11,15 +11,22 @@ class AccountChangesConsumer < ApplicationConsumer
 
       case message['event_name']
       when 'AccountCreated'
-        # TODO: if you want
+        account = fetch_account(message['data']['public_id']) || Account.new
+        account.update(
+          public_id: message['data']['public_id'],
+          email: message['data']['email'],
+          full_name: message['data']['full_name'],
+          role: message['data']['position']
+        )
       when 'AccountUpdated'
-        Account.find_by(public_id: message['data']['public_id'])&.update!(
+        fetch_account(message['data']['public_id'])&.update!(
           full_name: message['data']['full_name']
         )
       when 'AccountDeleted'
+        fetch_account(message['data']['public_id'])&.destroy!
         # TODO: if you want
       when 'AccountRoleChanged'
-        Account.find_by(public_id: message['data']['public_id'])&.update!(
+        fetch_account(message['data']['public_id'])&.update!(
           role: message['data']['role']
         )
       else
@@ -35,4 +42,11 @@ class AccountChangesConsumer < ApplicationConsumer
   # Define here any teardown things you want when Karafka server stops
   # def shutdown
   # end
+
+
+  private
+
+  def fetch_account(p_id)
+    Account.find_by(public_id:p_id)
+  end
 end
