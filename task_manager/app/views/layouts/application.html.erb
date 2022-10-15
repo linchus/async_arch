@@ -11,6 +11,9 @@
   </head>
 
   <body>
+    <% if current_account %>
+      <%= current_account.full_name %> (<%= current_account.public_id %>)
+    <% end %>
     <%= yield %>
   </body>
 </html>

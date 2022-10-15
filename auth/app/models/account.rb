@@ -35,14 +35,24 @@ class Account < ApplicationRecord
         public_id: account.public_id,
         email: account.email,
         full_name: account.full_name,
-        position: account.position
+        position: account.role
       }
     }
     result = SchemaRegistry.validate_event(event, 'accounts.created', version: 1)
 
     if result.success?
+      puts "Validation success"
       WaterDrop::SyncProducer.call(event.to_json, topic: 'accounts-stream')
+    else
+      puts "Validation failed"
+      puts result.failure
     end
     # --------------------------------------------------------------------
+  end
+
+  def initialize(*, **)
+    super
+
+    self.public_id ||= SecureRandom.uuid
   end
 end

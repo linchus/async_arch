@@ -1,0 +1,31 @@
+<div id="<%= dom_id task %>">
+  <p>
+    <strong>Public:</strong>
+    <%= task.public_id %>
+  </p>
+
+  <p>
+    <strong>State:</strong>
+    <%= task.state %>
+  </p>
+
+  <p>
+    <strong>Assigned to:</strong>
+    <%= task.assigned_to.full_name %>
+  </p>
+
+  <p>
+    <strong>Created by:</strong>
+    <%= task.created_by.full_name %>
+  </p>
+
+  <p>
+    <strong>Title:</strong>
+    <%= task.title %>
+  </p>
+
+  <p>
+    <strong>Description:</strong>
+    <%= task.description %>
+  </p>
+</div>

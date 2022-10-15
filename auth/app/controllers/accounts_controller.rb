@@ -36,7 +36,7 @@ class AccountsController < ApplicationController
             public_id: @account.public_id,
             email: @account.email,
             full_name: @account.full_name,
-            position: @account.position
+            position: @account.role
           }
         }
         result = SchemaRegistry.validate_event(event, 'accounts.updated', version: 1)
