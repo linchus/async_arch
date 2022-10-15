@@ -9,6 +9,8 @@ class OauthSessionController < ApplicationController
     puts request.env['omniauth.auth']
     account = fetch_account || create_account
 
+    return head(:forbidden) unless account.admin?
+
     request.env['warden'].set_user(account)
     redirect_to '/tasks'
   end
@@ -36,6 +38,7 @@ class OauthSessionController < ApplicationController
         username: payload['info']['email'],
         user_info: payload.to_h
       )
+
       account
     end
   end
