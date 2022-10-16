@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
 
-  "title": "Accounts.RoleChanged.v1",
-  "description": "json schema for BE account events (version 1)",
+  "title": "Tasks.Resolved.v1",
+  "description": "json schema for BE task events (version 1)",
 
   "definitions": {
     "event_data": {
@@ -11,13 +11,19 @@
         "public_id": {
           "type": "string"
         },
-        "role": {
-          "type": "string"
+        "assigned_to": {
+          "type": "object",
+          "properties": {
+            "public_id": {
+              "type": "string"
+            }
+          },
+          "required": ["public_id"]
         }
       },
       "required": [
         "public_id",
-        "role"
+        "assigned_to"
       ]
     }
   },
@@ -27,7 +33,7 @@
   "properties": {
     "event_id":      { "type": "string" },
     "event_version": { "enum": [1] },
-    "event_name":    { "enum": ["AccountRoleChanged"] },
+    "event_name":    { "enum": ["Task.Resolved"] },
     "event_time":    { "type": "string" },
     "producer":      { "type": "string" },
 

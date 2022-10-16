@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
 
-  "title": "Accounts.Created.v2",
-  "description": "json schema for CUD account events (version 1)",
+  "title": "Accounts.RoleChanged.v1",
+  "description": "json schema for BE account events (version 1)",
 
   "definitions": {
     "event_data": {
@@ -11,22 +11,13 @@
         "public_id": {
           "type": "string"
         },
-        "email": {
+        "role": {
           "type": "string"
-        },
-        "first_name": {
-          "type": ["string", "null"]
-        },
-        "last_name": {
-          "type": ["string", "null"]
-        },
-        "position": {
-          "type": ["string", "null"]
         }
       },
       "required": [
         "public_id",
-        "email"
+        "role"
       ]
     }
   },
@@ -36,7 +27,7 @@
   "properties": {
     "event_id":      { "type": "string" },
     "event_version": { "enum": [1] },
-    "event_name":    { "enum": ["AccountCreated"] },
+    "event_name":    { "enum": ["Account.RoleChanged"] },
     "event_time":    { "type": "string" },
     "producer":      { "type": "string" },
 

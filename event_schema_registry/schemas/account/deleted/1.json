@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
 
-  "title": "Accounts.Deleted.v1",
+  "title": "Account.Deleted.v1",
   "description": "json schema for CUD account events (version 1)",
 
   "definitions": {
@@ -23,7 +23,7 @@
   "properties": {
     "event_id":      { "type": "string" },
     "event_version": { "enum": [1] },
-    "event_name":    { "enum": ["AccountDeleted"] },
+    "event_name":    { "enum": ["Account.Deleted"] },
     "event_time":    { "type": "string" },
     "producer":      { "type": "string" },
 
