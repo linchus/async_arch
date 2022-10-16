@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_10_08_144527) do
+ActiveRecord::Schema[7.0].define(version: 2022_10_16_172806) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "accounts", force: :cascade do |t|
+    t.integer "user_id"
+    t.string "public_id"
+    t.string "currency"
+    t.string "label"
+    t.integer "cached_balance"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "auth_providers", force: :cascade do |t|
     t.integer "user_id"
@@ -20,6 +30,27 @@ ActiveRecord::Schema[7.0].define(version: 2022_10_08_144527) do
     t.string "provider"
     t.string "username"
     t.jsonb "user_info"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "statements", force: :cascade do |t|
+    t.integer "account_id"
+    t.string "description"
+    t.integer "credit"
+    t.integer "debit"
+    t.string "ref_type", null: false
+    t.bigint "ref_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ref_type", "ref_id"], name: "index_statements_on_ref"
+  end
+
+  create_table "tasks", force: :cascade do |t|
+    t.string "public_id"
+    t.string "title"
+    t.integer "assign_price"
+    t.integer "resolve_price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -5,7 +5,7 @@ class CreateStatements < ActiveRecord::Migration[7.0]
       t.string :description
       t.integer :credit
       t.integer :debit
-      t.references :ref, null: false, foreign_key: true
+      t.references :ref, null: false, polymorphic: true
 
       t.timestamps
     end

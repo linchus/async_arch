@@ -33,7 +33,7 @@
   "properties": {
     "event_id":      { "type": "string" },
     "event_version": { "enum": [1] },
-    "event_name":    { "enum": ["AccountCreated"] },
+    "event_name":    { "enum": ["Account.Created"] },
     "event_time":    { "type": "string" },
     "producer":      { "type": "string" },
 
