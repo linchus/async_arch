@@ -16,4 +16,20 @@ class Task < ApplicationRecord
     self.state ||= :pending
     self.public_id ||= SecureRandom.uuid
   end
+
+  def old_title
+    attributes['title']
+  end
+
+  def title
+    return if attributes['title'].nil?
+
+    attributes['title'].split(/ - /).last
+  end
+
+  def jira_id
+    return unless attributes['title'] =~ /\s\-\s/
+
+    attributes['title'].split(/ - /).first
+  end
 end

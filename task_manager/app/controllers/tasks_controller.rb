@@ -21,9 +21,9 @@ class TasksController < ApplicationController
           assigned_to: {public_id: t.assigned_to.public_id}
         }
         acc << build_event('tasks-stream', 'Task.Updated', meta: task_event_data, payload: task_data(t))
-        acc << build_event('tasks', 'Task.Assigned', meta: task_event_data, payload: payload)
+        acc << build_event('tasks', 'Task.Assigned', meta: task_event_data(1), payload: payload)
       end
-    end
+    end.compact
     KAFKA_PRODUCER.produce_many_sync(events)
     redirect_to '/tasks'
   end
@@ -54,7 +54,7 @@ class TasksController < ApplicationController
           [
             build_event('tasks-stream', 'Task.Created', meta: task_event_data, payload: payload),
             build_event('tasks', 'Task.Added', meta: task_event_data, payload: payload)
-          ]
+          ].compact
         )
 
         format.html { redirect_to task_url(@task), notice: "Task was successfully created." }
@@ -79,10 +79,10 @@ class TasksController < ApplicationController
             public_id: @task.public_id,
             assigned_to: {public_id: @task.assigned_to.public_id}
           }
-          events << build_event('tasks', 'Task.Resolved', meta: task_event_data, payload: payload)
+          events << build_event('tasks', 'Task.Resolved', meta: task_event_data(1), payload: payload)
         end
 
-        KAFKA_PRODUCER.produce_many_sync(events)
+        KAFKA_PRODUCER.produce_many_sync(events.compact)
         format.html { redirect_to task_url(@task), notice: "Task was successfully updated." }
         format.json { render :show, status: :ok, location: @task }
       else
@@ -107,28 +107,45 @@ class TasksController < ApplicationController
       Account.executors.random.take
     end
 
-    def task_event_data
+    def task_event_data(v = 2)
       {
         event_id: SecureRandom.uuid,
-        event_version: 1,
+        event_version: v,
         event_time: Time.now.to_s,
         producer: 'task_manager',
       }
     end
 
-    def task_data(task)
-      {
-        public_id: task.public_id,
-        title: task.title,
-        state: task.state,
-        description: task.description,
-        assigned_to: {
-          public_id: task.assigned_to.public_id
-        },
-        created_by: {
-          public_id: task.created_by.public_id
+    def task_data(task, version=2)
+      case version
+      when 1
+        {
+          public_id: task.public_id,
+          title: task.old_title,
+          state: task.state,
+          description: task.description,
+          assigned_to: {
+            public_id: task.assigned_to.public_id
+          },
+          created_by: {
+            public_id: task.created_by.public_id
+          }
         }
-      }
+      when 2
+        {
+          public_id: task.public_id,
+          title: task.title,
+          jira_id: task.jira_id,
+          state: task.state,
+          description: task.description,
+          assigned_to: {
+            public_id: task.assigned_to.public_id
+          },
+          created_by: {
+            public_id: task.created_by.public_id
+          }
+        }
+      end
     end
 
     def build_event(topic, event_name, meta:, payload:)
