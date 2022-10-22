@@ -7,4 +7,7 @@ Rails.application.routes.draw do
   get '/logout', to: 'oauth_session#destroy'
   get '/auth/:provider/callback', to: 'oauth_session#create'
 
+  resources :accounts, only: %i[index show] do
+    resources :statements, only: %i[index]
+  end
 end

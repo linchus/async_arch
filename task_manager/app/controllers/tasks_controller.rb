@@ -5,6 +5,7 @@ class TasksController < ApplicationController
   # GET /tasks or /tasks.json
   def index
     @tasks = Task.all.preload(:assigned_to, :created_by).order(:id)
+    @tasks = @tasks.pending if params[:state] != 'all'
   end
 
   def my

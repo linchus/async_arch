@@ -1,0 +1,23 @@
+<h1>Today profit: <%= today_profit %></h1>
+<h3>User accounts (<%= current_user.full_name %>, <%= current_user.public_id %>)</h3>
+
+<div id="accounts">
+  <table>
+    <thead>
+      <th>Public ID</th>
+      <th>Name</th>
+      <th>Balance</th>
+    </thead>
+    <% @accounts.each do |account| %>
+      <%= render account %>
+    <tr>
+
+    </tr>
+
+    <p>
+
+    </p>
+    <% end %>
+  </table>
+
+</div>

@@ -20,8 +20,14 @@ class KarafkaApp < Karafka::App
     # Uncomment this if you use Karafka with ActiveJob
     # You ned to define the topic per each queue name you use
     # active_job_topic :default
-    topic :example do
-      consumer ExampleConsumer
+
+    topic :'accounts-stream' do
+      consumer AccountChangesConsumer
     end
+
+    topic :'accounts' do
+      consumer AccountChangesConsumer
+    end
+
   end
 end
