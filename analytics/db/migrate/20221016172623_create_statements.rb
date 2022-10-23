@@ -1,7 +1,7 @@
 class CreateStatements < ActiveRecord::Migration[7.0]
   def change
     create_table :statements do |t|
-      t.integer :account_public_id
+      t.string :account_public_id
       t.string :description
       t.integer :credit, default: 0
       t.integer :debit, default: 0
