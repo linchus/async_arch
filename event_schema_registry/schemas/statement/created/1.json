@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+
+  "title": "Statement.Created.v1",
+  "description": "json schema for CUD Statement events (version 1)",
+
+  "definitions": {
+    "event_data": {
+      "type": "object",
+      "properties": {
+        "owner": {
+          "type": "object",
+          "properties": {
+            "public_id": {
+              "type": "string"
+            }
+          },
+          "required": ["public_id"]
+        },
+        "description": {
+          "type": "string"
+        },
+        "credit": {
+          "type": "integer"
+        },
+        "debit": {
+          "type": "integer"
+        },
+        "ref_type": {
+          "type": ["string", "null"],
+          "enum": ["Task", "User"]
+        },
+        "ref_public_id": {
+          "type": ["string", "null"]
+        }
+      },
+      "required": [
+        "owner",
+        "description",
+        "credit",
+        "debit",
+        "ref_type",
+        "ref_public_id"
+      ]
+    }
+  },
+
+  "type": "object",
+
+  "properties": {
+    "event_id":      { "type": "string" },
+    "event_version": { "enum": [1] },
+    "event_name":    { "enum": ["Statement.Created"] },
+    "event_time":    { "type": "string" },
+    "producer":      { "type": "string" },
+
+    "data": { "$ref": "#/definitions/event_data" }
+  },
+
+  "required": [
+    "event_id",
+    "event_version",
+    "event_name",
+    "event_time",
+    "producer",
+    "data"
+  ]
+}
+

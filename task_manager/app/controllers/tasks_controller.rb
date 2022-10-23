@@ -5,6 +5,7 @@ class TasksController < ApplicationController
   # GET /tasks or /tasks.json
   def index
     @tasks = Task.all.preload(:assigned_to, :created_by).order(:id)
+    @tasks = @tasks.pending if params[:state] != 'all'
   end
 
   def my
@@ -15,18 +16,15 @@ class TasksController < ApplicationController
     events = Task.pending.each_with_object([]) do |t, acc|
       prev_user_id = t.assigned_to_id
       t.update!(assigned_to: fetch_account_to_assign)
-      event = {
-        **task_event_data,
-        event_name: 'Task.Assigned',
-        data: {
+      if prev_user_id != t.assigned_to_id
+        payload = {
           public_id: t.public_id,
-          assigned_to: {
-            public_id: t.assigned_to.public_id
-          }
+          assigned_to: {public_id: t.assigned_to.public_id}
         }
-      }
-      acc << {topic: 'tasks', payload: event.to_json} if prev_user_id != t.assigned_to_id
-    end
+        acc << build_event('tasks-stream', 'Task.Updated', meta: task_event_data, payload: task_data(t))
+        acc << build_event('tasks', 'Task.Assigned', meta: task_event_data(1), payload: payload)
+      end
+    end.compact
     KAFKA_PRODUCER.produce_many_sync(events)
     redirect_to '/tasks'
   end
@@ -52,12 +50,12 @@ class TasksController < ApplicationController
 
     respond_to do |format|
       if @task.save
-        data = task_data(@task)
+        payload = task_data(@task)
         KAFKA_PRODUCER.produce_many_sync(
           [
-            {topic: 'tasks-stream', payload: {**task_event_data, event_name: 'Task.Created', data: data}.to_json},
-            {topic: 'tasks', payload: {**task_event_data, event_name: 'Task.Added', data: data}.to_json}
-          ]
+            build_event('tasks-stream', 'Task.Created', meta: task_event_data, payload: payload),
+            build_event('tasks', 'Task.Added', meta: task_event_data, payload: payload)
+          ].compact
         )
 
         format.html { redirect_to task_url(@task), notice: "Task was successfully created." }
@@ -73,21 +71,19 @@ class TasksController < ApplicationController
   def update
     respond_to do |format|
       if @task.update(task_params)
-        data = task_data(@task)
-        events = []
+        events = [
+          build_event('tasks-stream', 'Task.Updated', meta: task_event_data, payload: task_data(@task))
+        ]
 
-        events << {topic: 'tasks-stream', payload: {**task_event_data, event_name: 'Task.Updated', data: data}.to_json}
         if @task.previous_changes.has_key?('state') && @task.resolved?
           payload = {
             public_id: @task.public_id,
-            assigned_to: {
-              public_id: @task.assigned_to.public_id
-            }
+            assigned_to: {public_id: @task.assigned_to.public_id}
           }
-          events << {topic: 'tasks', payload: {**task_event_data, event_name: 'Task.Resolved', data: payload}.to_json}
+          events << build_event('tasks', 'Task.Resolved', meta: task_event_data(1), payload: payload)
         end
 
-        KAFKA_PRODUCER.produce_many_sync(events)
+        KAFKA_PRODUCER.produce_many_sync(events.compact)
         format.html { redirect_to task_url(@task), notice: "Task was successfully updated." }
         format.json { render :show, status: :ok, location: @task }
       else
@@ -112,27 +108,61 @@ class TasksController < ApplicationController
       Account.executors.random.take
     end
 
-    def task_event_data
+    def task_event_data(v = 2)
       {
         event_id: SecureRandom.uuid,
-        event_version: 1,
+        event_version: v,
         event_time: Time.now.to_s,
         producer: 'task_manager',
       }
     end
 
-    def task_data(task)
-      {
-        public_id: task.public_id,
-        title: task.title,
-        state: task.state,
-        description: task.description,
-        assigned_to: {
-          public_id: task.assigned_to.public_id
-        },
-        created_by: {
-          public_id: task.created_by.public_id
+    def task_data(task, version=2)
+      case version
+      when 1
+        {
+          public_id: task.public_id,
+          title: task.old_title,
+          state: task.state,
+          description: task.description,
+          assigned_to: {
+            public_id: task.assigned_to.public_id
+          },
+          created_by: {
+            public_id: task.created_by.public_id
+          }
         }
+      when 2
+        {
+          public_id: task.public_id,
+          title: task.title,
+          jira_id: task.jira_id,
+          state: task.state,
+          description: task.description,
+          assigned_to: {
+            public_id: task.assigned_to.public_id
+          },
+          created_by: {
+            public_id: task.created_by.public_id
+          }
+        }
+      end
+    end
+
+    def build_event(topic, event_name, meta:, payload:)
+      event = {
+        **meta,
+        event_name: event_name,
+        data: payload
       }
+
+      result = SchemaRegistry.validate_event(event, event_name.underscore, version: event[:event_version])
+
+      if result.success?
+        {topic: topic, payload: event.to_json}
+      else
+        puts "Event validation error: #{result.failure}"
+        puts "Event data: #{event.inspect}"
+      end
     end
 end

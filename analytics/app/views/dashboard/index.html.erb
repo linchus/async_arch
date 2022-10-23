@@ -1,0 +1,13 @@
+<h1>Dashboard</h1>
+
+<h2>Daily profit - <%= daily_profit %></h2>
+<h2>Debtors - <%= credited_accounts %></h2>
+<h2>Top tasks</h2>
+
+<ul>
+  <% top_tasks.keys.sort.each do |date|%>
+    <li>
+      <%= date %> - <%= top_tasks[date].task.title %> - $<%= top_tasks[date].debit %>
+    </li>
+  <% end%>
+</ul>

@@ -1,0 +1,28 @@
+<h1>
+  Account # <%= @account.label %>
+</h1>
+
+<div id="statements">
+  <table>
+    <thead>
+      <tr>
+        <th>Ref</th>
+        <th>Desc</th>
+        <th>Credit</th>
+        <th>Debit</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @statements.each do |statement| %>
+        <tr>
+          <td><%= statement.ref.class %> #<%= statement.ref.public_id %></td>
+          <td><%= statement.description %></td>
+          <td><%= statement.credit %></td>
+          <td><%= statement.debit %></td>
+          <td><%= statement.created_at %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

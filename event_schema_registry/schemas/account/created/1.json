@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
 
-  "title": "Accounts.Deleted.v1",
+  "title": "Accounts.Created.v1",
   "description": "json schema for CUD account events (version 1)",
 
   "definitions": {
@@ -10,10 +10,20 @@
       "properties": {
         "public_id": {
           "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": ["string", "null"]
+        },
+        "position": {
+          "type": ["string", "null"]
         }
       },
       "required": [
-        "public_id"
+        "public_id",
+        "email"
       ]
     }
   },
@@ -23,7 +33,7 @@
   "properties": {
     "event_id":      { "type": "string" },
     "event_version": { "enum": [1] },
-    "event_name":    { "enum": ["AccountDeleted"] },
+    "event_name":    { "enum": ["Account.Created"] },
     "event_time":    { "type": "string" },
     "producer":      { "type": "string" },
 

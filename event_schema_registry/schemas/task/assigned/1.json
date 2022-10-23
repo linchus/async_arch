@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
 
-  "title": "Accounts.Updated.v1",
-  "description": "json schema for CUD account events (version 1)",
+  "title": "Tasks.Assigned.v1",
+  "description": "json schema for BE task events (version 1)",
 
   "definitions": {
     "event_data": {
@@ -11,18 +11,19 @@
         "public_id": {
           "type": "string"
         },
-        "email": {
-          "type": "string"
-        },
-        "full_name": {
-          "type": ["string", "null"]
-        },
-        "position": {
-          "type": ["string", "null"]
+        "assigned_to": {
+          "type": "object",
+          "properties": {
+            "public_id": {
+              "type": "string"
+            }
+          },
+          "required": ["public_id"]
         }
       },
       "required": [
-        "public_id"
+        "public_id",
+        "assigned_to"
       ]
     }
   },
@@ -32,7 +33,7 @@
   "properties": {
     "event_id":      { "type": "string" },
     "event_version": { "enum": [1] },
-    "event_name":    { "enum": ["AccountUpdated"] },
+    "event_name":    { "enum": ["Task.Assigned"] },
     "event_time":    { "type": "string" },
     "producer":      { "type": "string" },
 

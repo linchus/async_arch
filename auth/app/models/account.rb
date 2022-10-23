@@ -30,7 +30,7 @@ class Account < ApplicationRecord
       event_version: 1,
       event_time: Time.now.to_s,
       producer: 'auth_service',
-      event_name: 'AccountCreated',
+      event_name: 'Account.Created',
       data: {
         public_id: account.public_id,
         email: account.email,
@@ -38,7 +38,7 @@ class Account < ApplicationRecord
         position: account.role
       }
     }
-    result = SchemaRegistry.validate_event(event, 'accounts.created', version: 1)
+    result = SchemaRegistry.validate_event(event, 'account.created', version: 1)
 
     if result.success?
       puts "Validation success"

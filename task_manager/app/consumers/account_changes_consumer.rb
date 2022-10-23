@@ -10,7 +10,7 @@ class AccountChangesConsumer < ApplicationConsumer
       puts '-' * 80
 
       case message['event_name']
-      when 'AccountCreated'
+      when 'Account.Created'
         account = fetch_account(message['data']['public_id']) || Account.new
         account.update(
           public_id: message['data']['public_id'],
@@ -18,14 +18,14 @@ class AccountChangesConsumer < ApplicationConsumer
           full_name: message['data']['full_name'],
           role: message['data']['position']
         )
-      when 'AccountUpdated'
+      when 'Account.Updated'
         fetch_account(message['data']['public_id'])&.update!(
           full_name: message['data']['full_name']
         )
-      when 'AccountDeleted'
+      when 'Account.Deleted'
         fetch_account(message['data']['public_id'])&.destroy!
         # TODO: if you want
-      when 'AccountRoleChanged'
+      when 'Account.RoleChanged'
         fetch_account(message['data']['public_id'])&.update!(
           role: message['data']['role']
         )

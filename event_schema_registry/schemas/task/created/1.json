@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+
+  "title": "Tasks.Created.v1",
+  "description": "json schema for CUD task events (version 1)",
+
+  "definitions": {
+    "event_data": {
+      "type": "object",
+      "properties": {
+        "public_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string",
+          "enum": ["pending", "resolved"]
+        },
+        "description": {
+          "type": ["string", "null"]
+        },
+        "assigned_to": {
+          "type": "object",
+          "properties": {
+            "public_id": {
+              "type": "string"
+            }
+          },
+          "required": ["public_id"]
+        },
+        "created_by": {
+          "type": "object",
+          "properties": {
+            "public_id": {
+              "type": "string"
+            }
+          },
+          "required": ["public_id"]
+        }
+      },
+      "required": [
+        "public_id",
+        "title",
+        "state",
+        "description",
+        "assigned_to",
+        "created_by"
+      ]
+    }
+  },
+
+  "type": "object",
+
+  "properties": {
+    "event_id":      { "type": "string" },
+    "event_version": { "enum": [1] },
+    "event_name":    { "enum": ["Task.Created"] },
+    "event_time":    { "type": "string" },
+    "producer":      { "type": "string" },
+
+    "data": { "$ref": "#/definitions/event_data" }
+  },
+
+  "required": [
+    "event_id",
+    "event_version",
+    "event_name",
+    "event_time",
+    "producer",
+    "data"
+  ]
+}
+
