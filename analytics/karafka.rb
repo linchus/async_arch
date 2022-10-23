@@ -3,7 +3,7 @@
 class KarafkaApp < Karafka::App
   setup do |config|
     config.kafka = { 'bootstrap.servers': '127.0.0.1:9092' }
-    config.client_id = 'example_app'
+    config.client_id = 'anal_app'
     # Recreate consumers with each batch. This will allow Rails code reload to work in the
     # development mode. Otherwise Karafka process would not be aware of code changes
     config.consumer_persistence = !Rails.env.development?
@@ -13,7 +13,7 @@ class KarafkaApp < Karafka::App
   # interested in logging events for certain environments. Since instrumentation
   # notifications add extra boilerplate, if you want to achieve max performance,
   # listen to only what you really need for given environment.
-  Karafka.monitor.subscribe(Karafka::Instrumentation::LoggerListener.new)
+  # Karafka.monitor.subscribe(Karafka::Instrumentation::LoggerListener.new)
   # Karafka.monitor.subscribe(Karafka::Instrumentation::ProctitleListener.new)
 
   routes.draw do
@@ -27,6 +27,17 @@ class KarafkaApp < Karafka::App
 
     topic :'accounts' do
       consumer AccountChangesConsumer
+    end
+
+    topic :'tasks' do
+      consumer TaskChangesConsumer
+    end
+
+    topic :'tasks-stream' do
+      consumer TaskChangesConsumer
+    end
+    topic :'statements-stream' do
+      consumer StatementChangesConsumer
     end
 
   end

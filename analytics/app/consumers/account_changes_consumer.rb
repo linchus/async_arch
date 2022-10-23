@@ -9,29 +9,7 @@ class AccountChangesConsumer < ApplicationConsumer
       p message
       puts '-' * 80
 
-      case message['event_name']
-      when 'Account.Created'
-        account = fetch_account(message['data']['public_id']) || Account.new
-        account.update(
-          public_id: message['data']['public_id'],
-          email: message['data']['email'],
-          full_name: message['data']['full_name'],
-          role: message['data']['position']
-        )
-      when 'Account.Updated'
-        fetch_account(message['data']['public_id'])&.update!(
-          full_name: message['data']['full_name']
-        )
-      when 'Account.Deleted'
-        fetch_account(message['data']['public_id'])&.destroy!
-        # TODO: if you want
-      when 'Account.RoleChanged'
-        fetch_account(message['data']['public_id'])&.update!(
-          role: message['data']['role']
-        )
-      else
-        # store events in DB
-      end
+      process_message(message)
     end
   end
 
@@ -45,6 +23,32 @@ class AccountChangesConsumer < ApplicationConsumer
 
 
   private
+
+  def process_message(message)
+    case message['event_name']
+    when 'Account.Created'
+      account = fetch_account(message['data']['public_id']) || Account.new
+      account.update(
+        public_id: message['data']['public_id'],
+        email: message['data']['email'],
+        full_name: message['data']['full_name'],
+        role: message['data']['position']
+      )
+    when 'Account.Updated'
+      fetch_account(message['data']['public_id'])&.update!(
+        full_name: message['data']['full_name']
+      )
+    when 'Account.Deleted'
+      fetch_account(message['data']['public_id'])&.destroy!
+      # TODO: if you want
+    when 'Account.RoleChanged'
+      fetch_account(message['data']['public_id'])&.update!(
+        role: message['data']['role']
+      )
+    else
+      # store events in DB
+    end
+  end
 
   def fetch_account(p_id)
     Account.find_by(public_id:p_id)

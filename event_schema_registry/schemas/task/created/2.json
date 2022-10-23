@@ -59,7 +59,7 @@
 
   "properties": {
     "event_id":      { "type": "string" },
-    "event_version": { "enum": [1] },
+    "event_version": { "enum": [2] },
     "event_name":    { "enum": ["Task.Created"] },
     "event_time":    { "type": "string" },
     "producer":      { "type": "string" },

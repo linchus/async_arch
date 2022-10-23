@@ -49,7 +49,7 @@ class TaskChangesConsumer < ApplicationConsumer
       user = User.find_by!(public_id: message['data']['assigned_to']['public_id'])
       account = user.accounts.take!
       account.statements.create!(
-        debit: task.resolve_price,
+        credit: task.assign_price,
         description: "Task #{task.title} reassigned",
         ref: task
       )

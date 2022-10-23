@@ -4,10 +4,10 @@ Rails.application.config.middleware.insert_after ActionDispatch::Session::Cookie
   manager.default_strategies :password
 end
 
-Warden::Manager.serialize_into_session do |user|
-  user.id
+Warden::Manager.serialize_into_session do |account|
+  account.id
 end
 
 Warden::Manager.serialize_from_session do |id|
-  User.find(id)
+  Account.find(id)
 end

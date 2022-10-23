@@ -11,7 +11,7 @@ class User < ApplicationRecord
         day_balance = (day_result.total_credit || 0) + (day_result.total_debit || 0)
         if day_balance.positive?
           account.statements.create!(
-            credit: day_balance,
+            credit: -day_balance,
             description: "Payout for #{date}",
             ref: user,
             created_at: date.end_of_day

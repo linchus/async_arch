@@ -6,4 +6,5 @@ Rails.application.routes.draw do
 
   get '/logout', to: 'oauth_session#destroy'
   get '/auth/:provider/callback', to: 'oauth_session#create'
+  get '/dashboard', to: 'dashboard#index'
 end

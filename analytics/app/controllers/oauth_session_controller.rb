@@ -12,7 +12,7 @@ class OauthSessionController < ApplicationController
     return head(:forbidden) unless account.admin?
 
     request.env['warden'].set_user(account)
-    redirect_to '/tasks'
+    redirect_to '/dashboard'
   end
 
   private
